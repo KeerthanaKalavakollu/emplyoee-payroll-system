@@ -1,64 +1,59 @@
-#include <algorithm>
+﻿#include <ctime>
 #include <sstream>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class Employee {
-private:
-    int empId;
-    string name;
-    double basicPay;
-    int otHours;
-
+class Transaction {
 public:
-    Employee() : empId(0), basicPay(0), otHours(0) {}
+    int accNo;
+    string type;
+    double amount;
+    string timestamp;
 
-    Employee(int id, const string &n, double bp, int ot) {
-        empId = id;
-        name = n;
-        basicPay = bp;
-        otHours = ot;
-    }
-
-    int getEmpId() const { return empId; }
-    const string &getName() const { return name; }
-    double getBasicPay() const { return basicPay; }
-    int getOTHours() const { return otHours; }
-
-    bool setOTHours(int ot) {
-        if (ot < 0) {
-            return false;
-        }
-        otHours = ot;
-        return true;
-    }
-
-    double calculateGross() const {
-        const double otRate = 100.0;
-        return basicPay + (otHours * otRate);
-    }
-
-    double calculateTax() const {
-        double gross = calculateGross();
-        if (gross <= 30000) return gross * 0.05;
-        if (gross <= 60000) return gross * 0.10;
-        return gross * 0.15;
-    }
-
-    double calculateNet() const {
-        return calculateGross() - calculateTax();
+    Transaction(int accountNumber, const string &transactionType, double transactionAmount)
+        : accNo(accountNumber), type(transactionType), amount(transactionAmount) {
+        time_t now = std::time(nullptr);
+        timestamp = ctime(&now);
     }
 };
 
-class PayrollSystem {
+class Account {
 private:
-    vector<Employee> employees;
+    int accNo;
+    string name;
+    double balance;
 
-    int findEmployeeIndex(int id) const {
-        for (size_t i = 0; i < employees.size(); i++) {
-            if (employees[i].getEmpId() == id) {
+public:
+    Account(int accountNumber, const string &accountName, double openingBalance = 0.0)
+        : accNo(accountNumber), name(accountName), balance(openingBalance) {}
+
+    int getAccNo() const { return accNo; }
+    const string &getName() const { return name; }
+    double getBalance() const { return balance; }
+
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    bool withdraw(double amount) {
+        if (amount > balance) {
+            return false;
+        }
+        balance -= amount;
+        return true;
+    }
+};
+
+class BankSystem {
+private:
+    vector<Account> accounts;
+    vector<Transaction> transactions;
+
+    int findAccountIndex(int accNo) const {
+        for (size_t i = 0; i < accounts.size(); ++i) {
+            if (accounts[i].getAccNo() == accNo) {
                 return static_cast<int>(i);
             }
         }
@@ -66,69 +61,90 @@ private:
     }
 
 public:
-    bool addEmployee(int id, const string &name, double basic, int ot) {
-        if (id <= 0 || name.empty() || basic < 0 || ot < 0) {
+    bool createAccount(int accNo, const string &name) {
+        if (accNo <= 0 || name.empty() || findAccountIndex(accNo) != -1) {
             return false;
         }
-        if (findEmployeeIndex(id) != -1) {
-            return false;
-        }
-        employees.emplace_back(id, name, basic, ot);
+
+        accounts.emplace_back(accNo, name);
         return true;
     }
 
-    bool updateOT(int id, int ot) {
-        int index = findEmployeeIndex(id);
-        if (index == -1) {
+    bool deposit(int accNo, double amount) {
+        int index = findAccountIndex(accNo);
+        if (index == -1 || amount <= 0) {
             return false;
         }
-        return employees[index].setOTHours(ot);
+
+        accounts[index].deposit(amount);
+        transactions.emplace_back(accNo, "Deposit", amount);
+        return true;
     }
 
-    string generatePayslip(int id) const {
-        int index = findEmployeeIndex(id);
-        if (index == -1) {
-            return "Employee not found";
+    bool withdraw(int accNo, double amount) {
+        int index = findAccountIndex(accNo);
+        if (index == -1 || amount <= 0) {
+            return false;
         }
 
-        const Employee &employee = employees[index];
+        if (!accounts[index].withdraw(amount)) {
+            return false;
+        }
+
+        transactions.emplace_back(accNo, "Withdraw", amount);
+        return true;
+    }
+
+    string balanceEnquiry(int accNo) const {
+        int index = findAccountIndex(accNo);
+        if (index == -1) {
+            return "Account not found";
+        }
+
+        const Account &account = accounts[index];
         ostringstream out;
-        out << "Employee ID: " << employee.getEmpId() << "\n";
-        out << "Name: " << employee.getName() << "\n";
-        out << "Basic Pay: " << employee.getBasicPay() << "\n";
-        out << "OT Hours: " << employee.getOTHours() << "\n";
-        out << "Gross Pay: " << employee.calculateGross() << "\n";
-        out << "Tax: " << employee.calculateTax() << "\n";
-        out << "Net Pay: " << employee.calculateNet();
+        out << "AccNo: " << account.getAccNo() << "\n";
+        out << "Name: " << account.getName() << "\n";
+        out << "Balance: " << account.getBalance();
         return out.str();
     }
 
-    double totalPayout() const {
-        double total = 0;
-        for (const auto &employee : employees) {
-            total += employee.calculateNet();
-        }
-        return total;
-    }
+    string lastTransactions(int accNo, int limit = 5) const {
+        ostringstream out;
+        int count = 0;
 
-    string highestPaidSummary() const {
-        if (employees.empty()) {
-            return "No employees available";
-        }
-
-        const Employee *maxEmp = &employees[0];
-        for (const auto &employee : employees) {
-            if (employee.calculateNet() > maxEmp->calculateNet()) {
-                maxEmp = &employee;
+        for (int i = static_cast<int>(transactions.size()) - 1; i >= 0 && count < limit; --i) {
+            if (transactions[i].accNo == accNo) {
+                out << transactions[i].type
+                    << " | Amount: " << transactions[i].amount
+                    << " | Time: " << transactions[i].timestamp;
+                ++count;
             }
         }
 
-        ostringstream out;
-        out << "Highest Paid Employee\n";
-        out << "Employee ID: " << maxEmp->getEmpId() << "\n";
-        out << "Name: " << maxEmp->getName() << "\n";
-        out << "Net Pay: " << maxEmp->calculateNet();
+        if (count == 0) {
+            return "No transactions found";
+        }
+
         return out.str();
+    }
+
+    double totalMoney() const {
+        double sum = 0.0;
+        for (const auto &account : accounts) {
+            sum += account.getBalance();
+        }
+        return sum;
+    }
+
+    vector<Account> lowBalanceAccounts(double threshold) const {
+        vector<Account> filtered;
+        for (const auto &account : accounts) {
+            if (account.getBalance() < threshold) {
+                filtered.push_back(account);
+            }
+        }
+        return filtered;
     }
 };
 

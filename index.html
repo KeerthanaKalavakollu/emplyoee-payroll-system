@@ -1,22 +1,26 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payroll Studio</title>
+  <title>BankSphere</title>
   <style>
     :root {
-      --bg: #f5efe4;
-      --paper: rgba(255, 250, 241, 0.88);
-      --ink: #1f1d1a;
-      --muted: #6a6358;
-      --accent: #c55f38;
-      --accent-deep: #7f2f1d;
-      --accent-soft: #f3d7c3;
-      --teal: #1f6f78;
-      --line: rgba(31, 29, 26, 0.08);
-      --shadow: 0 18px 60px rgba(84, 48, 26, 0.16);
-      --radius: 24px;
+      --bg: #08111f;
+      --panel: rgba(9, 21, 39, 0.78);
+      --panel-strong: #0f1f36;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-soft: rgba(255, 255, 255, 0.04);
+      --text: #edf4ff;
+      --muted: #98abc7;
+      --line: rgba(255, 255, 255, 0.1);
+      --gold: #f4c46c;
+      --gold-deep: #d69a2f;
+      --aqua: #57d4cb;
+      --danger: #ff8f8f;
+      --success: #89f0af;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+      --radius: 28px;
     }
 
     * {
@@ -25,126 +29,133 @@
 
     body {
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(197, 95, 56, 0.18), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(31, 111, 120, 0.16), transparent 26%),
-        linear-gradient(135deg, #f8f3ea 0%, #efe5d3 100%);
       min-height: 100vh;
+      color: var(--text);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(87, 212, 203, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(244, 196, 108, 0.22), transparent 24%),
+        linear-gradient(160deg, #050b14 0%, #0a1424 46%, #07111f 100%);
     }
 
     body::before,
     body::after {
       content: "";
       position: fixed;
-      inset: auto;
-      width: 280px;
-      height: 280px;
+      width: 360px;
+      height: 360px;
       border-radius: 50%;
-      filter: blur(14px);
+      filter: blur(40px);
       z-index: -1;
-      opacity: 0.6;
+      opacity: 0.38;
     }
 
     body::before {
-      top: -90px;
-      right: -70px;
-      background: rgba(197, 95, 56, 0.18);
+      top: -120px;
+      left: -100px;
+      background: rgba(87, 212, 203, 0.34);
     }
 
     body::after {
-      bottom: -110px;
-      left: -60px;
-      background: rgba(31, 111, 120, 0.16);
+      right: -120px;
+      bottom: -100px;
+      background: rgba(244, 196, 108, 0.26);
     }
 
-    .shell {
-      width: min(1180px, calc(100% - 32px));
-      margin: 28px auto;
+    .app-shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 20px auto;
       padding: 22px;
-      background: rgba(255, 252, 247, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 34px;
+      background: rgba(5, 11, 20, 0.52);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(18px);
     }
 
     .hero {
       display: grid;
-      grid-template-columns: 1.4fr 0.9fr;
+      grid-template-columns: 1.25fr 0.95fr;
       gap: 20px;
-      align-items: stretch;
       margin-bottom: 20px;
     }
 
     .hero-card,
-    .summary-card,
+    .status-card,
     .panel,
-    .insight-card,
-    .employee-card {
-      background: var(--paper);
-      border: 1px solid rgba(255, 255, 255, 0.65);
+    .account-card,
+    .transaction-card {
       border-radius: var(--radius);
-      box-shadow: 0 12px 40px rgba(74, 48, 31, 0.08);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
     }
 
     .hero-card {
       padding: 30px;
       position: relative;
       overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 55%),
+        linear-gradient(160deg, rgba(87, 212, 203, 0.1), rgba(244, 196, 108, 0.1)),
+        var(--panel-strong);
     }
 
     .hero-card::after {
       content: "";
       position: absolute;
-      right: -40px;
-      top: -30px;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, rgba(197, 95, 56, 0.28), transparent 68%);
+      inset: auto -70px -100px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(244, 196, 108, 0.24), transparent 68%);
     }
 
     .eyebrow {
       margin: 0 0 10px;
-      font-size: 0.82rem;
-      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--accent-deep);
+      letter-spacing: 0.2em;
+      font-size: 0.78rem;
+      color: var(--gold);
     }
 
-    h1, h2, h3, p {
+    h1,
+    h2,
+    h3,
+    p {
       margin-top: 0;
     }
 
     h1 {
-      font-size: clamp(2.3rem, 5vw, 4.5rem);
-      line-height: 0.95;
-      margin-bottom: 14px;
-      max-width: 8ch;
+      max-width: 9ch;
+      margin-bottom: 16px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 0.92;
+      letter-spacing: -0.03em;
     }
 
     .hero-copy {
-      max-width: 56ch;
+      max-width: 60ch;
       color: var(--muted);
-      line-height: 1.65;
-      font-size: 1.02rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
     }
 
     .hero-actions {
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 22px;
+      gap: 12px;
     }
 
     button {
-      border: none;
+      border: 0;
       border-radius: 999px;
       padding: 12px 18px;
       font: inherit;
       cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      color: var(--text);
+      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     }
 
     button:hover {
@@ -152,45 +163,35 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #d68c68);
-      color: white;
-      box-shadow: 0 14px 24px rgba(197, 95, 56, 0.24);
+      background: linear-gradient(135deg, var(--gold-deep), var(--gold));
+      color: #111723;
+      box-shadow: 0 14px 28px rgba(214, 154, 47, 0.26);
     }
 
     .btn-secondary {
-      background: rgba(31, 111, 120, 0.1);
-      color: var(--teal);
+      background: rgba(87, 212, 203, 0.14);
+      color: var(--aqua);
+      border: 1px solid rgba(87, 212, 203, 0.2);
     }
 
-    .summary-card {
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .status-card {
       padding: 24px;
       display: grid;
+      gap: 16px;
       align-content: start;
-      gap: 18px;
     }
 
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .status-top {
+      display: flex;
+      justify-content: space-between;
       gap: 12px;
-    }
-
-    .metric {
-      padding: 16px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.62);
-      border: 1px solid var(--line);
-    }
-
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-    }
-
-    .metric strong {
-      font-size: 1.25rem;
+      align-items: start;
     }
 
     .badge {
@@ -199,14 +200,39 @@
       width: fit-content;
       padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(31, 111, 120, 0.1);
-      color: var(--teal);
       font-size: 0.88rem;
+      color: var(--aqua);
+      background: rgba(87, 212, 203, 0.12);
+      border: 1px solid rgba(87, 212, 203, 0.2);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .stat span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .stat strong {
+      font-size: 1.3rem;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 20px;
     }
 
@@ -223,8 +249,8 @@
     .panel-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: start;
+      gap: 12px;
       margin-bottom: 18px;
     }
 
@@ -249,36 +275,44 @@
     }
 
     label {
-      font-size: 0.92rem;
       color: var(--muted);
+      font-size: 0.92rem;
     }
 
     input {
       width: 100%;
       padding: 13px 14px;
       border-radius: 16px;
-      border: 1px solid rgba(31, 29, 26, 0.12);
-      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
       font: inherit;
-      color: var(--ink);
     }
 
     input:focus {
-      outline: 2px solid rgba(197, 95, 56, 0.24);
-      border-color: rgba(197, 95, 56, 0.42);
+      outline: 2px solid rgba(244, 196, 108, 0.2);
+      border-color: rgba(244, 196, 108, 0.42);
     }
 
-    .employee-grid {
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .accounts-grid,
+    .transactions-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      gap: 14px;
     }
 
-    .employee-card {
+    .account-card,
+    .transaction-card {
       padding: 18px;
+      background: var(--card-soft);
     }
 
-    .employee-card__top {
+    .account-top {
       display: flex;
       justify-content: space-between;
       gap: 12px;
@@ -286,54 +320,63 @@
       margin-bottom: 14px;
     }
 
-    .employee-card h3 {
+    .account-card h3 {
       margin-bottom: 0;
-      font-size: 1.35rem;
+      font-size: 1.3rem;
     }
 
-    .pill {
-      background: var(--accent-soft);
-      color: var(--accent-deep);
+    .chip {
+      padding: 7px 11px;
       border-radius: 999px;
-      padding: 7px 10px;
+      background: rgba(244, 196, 108, 0.12);
+      color: var(--gold);
       font-size: 0.84rem;
       white-space: nowrap;
     }
 
-    .stat-row {
+    .account-meta,
+    .transaction-meta {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      padding: 10px 0;
-      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--muted);
     }
 
-    .stat-row strong {
-      color: var(--ink);
+    .account-meta strong,
+    .transaction-meta strong {
+      color: var(--text);
     }
 
-    .stat-row--net strong {
-      color: var(--teal);
+    .transaction-card.deposit .chip {
+      color: var(--success);
+      background: rgba(137, 240, 175, 0.12);
+    }
+
+    .transaction-card.withdraw .chip {
+      color: var(--danger);
+      background: rgba(255, 143, 143, 0.12);
     }
 
     .result-box {
-      white-space: pre-wrap;
-      line-height: 1.7;
-      color: var(--muted);
       min-height: 180px;
       padding: 18px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.68);
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      line-height: 1.7;
+      white-space: pre-wrap;
     }
 
     .empty-state {
       padding: 18px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.62);
-      border: 1px dashed rgba(31, 29, 26, 0.18);
+      border-radius: 18px;
+      border: 1px dashed rgba(255, 255, 255, 0.16);
       color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
     }
 
     @media (max-width: 980px) {
@@ -344,66 +387,70 @@
     }
 
     @media (max-width: 640px) {
-      .shell {
-        width: min(100% - 18px, 100%);
-        margin: 9px auto;
+      .app-shell {
+        width: min(100% - 16px, 100%);
+        margin: 8px auto;
         padding: 14px;
       }
 
       .hero-card,
-      .summary-card,
+      .status-card,
       .panel {
         padding: 18px;
       }
 
       .form-grid,
-      .summary-grid {
+      .stats-grid {
         grid-template-columns: 1fr;
       }
 
       h1 {
         max-width: none;
-        font-size: 2.5rem;
+        font-size: 2.6rem;
       }
     }
   </style>
 </head>
 <body>
-  <main class="shell">
+  <main class="app-shell">
     <section class="hero">
       <div class="hero-card">
-        <p class="eyebrow">Payroll Dashboard</p>
-        <h1>Employee Payroll Management</h1>
+        <p class="eyebrow">Digital Branch</p>
+        <h1>Banking built from your C++ logic.</h1>
+        <p class="hero-copy">
+          This web version keeps the same core flow as your console app: create accounts, deposit money, withdraw safely, inspect balances, track the latest transactions, and spot low-balance accounts in one clean dashboard.
+        </p>
         <div class="hero-actions">
-          <button class="btn-primary" id="total-payout-btn" type="button">Show Total Payout</button>
-          <button class="btn-secondary" id="highest-paid-btn" type="button">Show Highest Paid</button>
+          <button class="btn-primary" id="total-money-btn" type="button">Show Total Bank Money</button>
+          <button class="btn-secondary" id="low-balance-btn" type="button">Find Low Balance Accounts</button>
+          <button class="btn-ghost" id="seed-demo-btn" type="button">Load Demo Accounts</button>
         </div>
       </div>
 
-      <aside class="summary-card">
-        <div class="panel-head">
+      <aside class="status-card">
+        <div class="status-top">
           <div>
-            <p class="eyebrow">Live Snapshot</p>
-            <h2>Payroll pulse</h2>
+            <p class="eyebrow">System Status</p>
+            <h2>Bank overview</h2>
           </div>
-          <span class="badge" id="wasm-badge">Loading asset...</span>
+          <span class="badge" id="wasm-badge">Checking WASM...</span>
         </div>
-        <div class="summary-grid">
-          <div class="metric">
-            <span>Employees</span>
-            <strong id="employee-count">00</strong>
+        <div class="stats-grid">
+          <div class="stat">
+            <span>Total Accounts</span>
+            <strong id="total-accounts">00</strong>
           </div>
-          <div class="metric">
-            <span>Average Net Pay</span>
-            <strong id="avg-net-pay">₹0.00</strong>
+          <div class="stat">
+            <span>Total Bank Money</span>
+            <strong id="total-money">₹0.00</strong>
           </div>
-          <div class="metric">
-            <span>Total Payout</span>
-            <strong id="total-payout">₹0.00</strong>
+          <div class="stat">
+            <span>Last Transaction</span>
+            <strong id="last-transaction">None yet</strong>
           </div>
-          <div class="metric">
-            <span>Top Earner</span>
-            <strong id="top-employee">None yet</strong>
+          <div class="stat">
+            <span>Low Balance Count</span>
+            <strong id="low-balance-count">0</strong>
           </div>
         </div>
       </aside>
@@ -415,28 +462,20 @@
           <div class="panel-head">
             <div>
               <p class="eyebrow">Create</p>
-              <h2>Add Employee</h2>
+              <h2>Open new account</h2>
             </div>
           </div>
-          <form id="add-form" class="form-grid">
+          <form id="create-form" class="form-grid">
             <div class="field">
-              <label for="empId">Employee ID</label>
-              <input id="empId" name="empId" type="number" min="1" required>
+              <label for="create-acc-no">Account Number</label>
+              <input id="create-acc-no" name="accNo" type="number" min="1" required>
             </div>
             <div class="field">
-              <label for="name">Name</label>
-              <input id="name" name="name" type="text" required>
-            </div>
-            <div class="field">
-              <label for="basicPay">Basic Pay</label>
-              <input id="basicPay" name="basicPay" type="number" min="0" step="0.01" required>
-            </div>
-            <div class="field">
-              <label for="otHours">OT Hours</label>
-              <input id="otHours" name="otHours" type="number" min="0" required>
+              <label for="create-name">Account Holder</label>
+              <input id="create-name" name="name" type="text" required>
             </div>
             <div class="field field--full">
-              <button class="btn-primary" type="submit">Add Employee</button>
+              <button class="btn-primary" type="submit">Create Account</button>
             </div>
           </form>
         </section>
@@ -444,21 +483,22 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="eyebrow">Manage</p>
-              <h2>Update OT Hours</h2>
+              <p class="eyebrow">Transactions</p>
+              <h2>Deposit and withdraw</h2>
             </div>
           </div>
-          <form id="update-form" class="form-grid">
+          <form id="transaction-form" class="form-grid">
             <div class="field">
-              <label for="updateEmpId">Employee ID</label>
-              <input id="updateEmpId" name="empId" type="number" min="1" required>
+              <label for="transaction-acc-no">Account Number</label>
+              <input id="transaction-acc-no" name="accNo" type="number" min="1" required>
             </div>
             <div class="field">
-              <label for="updateOtHours">New OT Hours</label>
-              <input id="updateOtHours" name="otHours" type="number" min="0" required>
+              <label for="transaction-amount">Amount</label>
+              <input id="transaction-amount" name="amount" type="number" min="0.01" step="0.01" required>
             </div>
-            <div class="field field--full">
-              <button class="btn-secondary" type="submit">Update Overtime</button>
+            <div class="field field--full actions-row">
+              <button class="btn-primary" data-action="deposit" type="submit">Deposit</button>
+              <button class="btn-secondary" data-action="withdraw" type="submit">Withdraw</button>
             </div>
           </form>
         </section>
@@ -466,12 +506,30 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="eyebrow">People</p>
-              <h2>Employee Overview</h2>
+              <p class="eyebrow">Lookup</p>
+              <h2>Balance enquiry</h2>
             </div>
           </div>
-          <div id="empty-state" class="empty-state" hidden>No employees added yet. Use the form above to get started.</div>
-          <div id="employee-grid" class="employee-grid"></div>
+          <form id="balance-form" class="form-grid">
+            <div class="field">
+              <label for="balance-acc-no">Account Number</label>
+              <input id="balance-acc-no" name="accNo" type="number" min="1" required>
+            </div>
+            <div class="field field--full">
+              <button class="btn-ghost" type="submit">Check Balance</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Accounts</p>
+              <h2>Customer ledger</h2>
+            </div>
+          </div>
+          <div id="accounts-empty" class="empty-state" hidden>No accounts yet. Create one or load the demo accounts to see the dashboard come alive.</div>
+          <div id="accounts-grid" class="accounts-grid"></div>
         </section>
       </div>
 
@@ -479,28 +537,22 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="eyebrow">Slip</p>
-              <h2>Generate Payslip</h2>
-              
-          <form id="slip-form" class="form-grid">
-            <div class="field field--full">
-              <label for="slipEmpId">Employee ID</label>
-              <input id="slipEmpId" name="empId" type="number" min="1" required>
+              <p class="eyebrow">Activity</p>
+              <h2>Last 5 transactions</h2>
             </div>
-            <div class="field field--full">
-              <button class="btn-primary" type="submit">Generate Salary Slip</button>
-            </div>
-          </form>
+          </div>
+          <div id="transactions-empty" class="empty-state" hidden>No transactions recorded yet.</div>
+          <div id="transactions-list" class="transactions-list"></div>
         </section>
 
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="eyebrow">Output</p>
-              <h2 id="result-title">Payroll insights</h2>
+              <p class="eyebrow">Console</p>
+              <h2 id="result-title">Bank insights</h2>
             </div>
           </div>
-          <div class="result-box" id="result-body">Use the controls on the left to add employees, update overtime, and generate salary slips.</div>
+          <div class="result-box" id="result-body">Use the forms and action buttons to interact with the same bank features from your original C++ program.</div>
         </section>
       </div>
     </section>
