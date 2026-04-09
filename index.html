@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payroll Studio</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --paper: rgba(255, 250, 241, 0.88);
+      --ink: #1f1d1a;
+      --muted: #6a6358;
+      --accent: #c55f38;
+      --accent-deep: #7f2f1d;
+      --accent-soft: #f3d7c3;
+      --teal: #1f6f78;
+      --line: rgba(31, 29, 26, 0.08);
+      --shadow: 0 18px 60px rgba(84, 48, 26, 0.16);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(197, 95, 56, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(31, 111, 120, 0.16), transparent 26%),
+        linear-gradient(135deg, #f8f3ea 0%, #efe5d3 100%);
+      min-height: 100vh;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      filter: blur(14px);
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    body::before {
+      top: -90px;
+      right: -70px;
+      background: rgba(197, 95, 56, 0.18);
+    }
+
+    body::after {
+      bottom: -110px;
+      left: -60px;
+      background: rgba(31, 111, 120, 0.16);
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto;
+      padding: 22px;
+      background: rgba(255, 252, 247, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero-card,
+    .summary-card,
+    .panel,
+    .insight-card,
+    .employee-card {
+      background: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 40px rgba(74, 48, 31, 0.08);
+    }
+
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -30px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(197, 95, 56, 0.28), transparent 68%);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 5vw, 4.5rem);
+      line-height: 0.95;
+      margin-bottom: 14px;
+      max-width: 8ch;
+    }
+
+    .hero-copy {
+      max-width: 56ch;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 1.02rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #d68c68);
+      color: white;
+      box-shadow: 0 14px 24px rgba(197, 95, 56, 0.24);
+    }
+
+    .btn-secondary {
+      background: rgba(31, 111, 120, 0.1);
+      color: var(--teal);
+    }
+
+    .summary-card {
+      padding: 24px;
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--line);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 1.25rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(31, 111, 120, 0.1);
+      color: var(--teal);
+      font-size: 0.88rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+    }
+
+    .left-column,
+    .right-column {
+      display: grid;
+      gap: 20px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .panel-head p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field--full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(31, 29, 26, 0.12);
+      background: rgba(255, 255, 255, 0.74);
+      font: inherit;
+      color: var(--ink);
+    }
+
+    input:focus {
+      outline: 2px solid rgba(197, 95, 56, 0.24);
+      border-color: rgba(197, 95, 56, 0.42);
+    }
+
+    .employee-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .employee-card {
+      padding: 18px;
+    }
+
+    .employee-card__top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .employee-card h3 {
+      margin-bottom: 0;
+      font-size: 1.35rem;
+    }
+
+    .pill {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .stat-row strong {
+      color: var(--ink);
+    }
+
+    .stat-row--net strong {
+      color: var(--teal);
+    }
+
+    .result-box {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      color: var(--muted);
+      min-height: 180px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+    }
+
+    .empty-state {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px dashed rgba(31, 29, 26, 0.18);
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 18px, 100%);
+        margin: 9px auto;
+        padding: 14px;
+      }
+
+      .hero-card,
+      .summary-card,
+      .panel {
+        padding: 18px;
+      }
+
+      .form-grid,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: none;
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <p class="eyebrow">Payroll Dashboard</p>
+        <h1>Employee Payroll Management</h1>
+        <div class="hero-actions">
+          <button class="btn-primary" id="total-payout-btn" type="button">Show Total Payout</button>
+          <button class="btn-secondary" id="highest-paid-btn" type="button">Show Highest Paid</button>
+        </div>
+      </div>
+
+      <aside class="summary-card">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Live Snapshot</p>
+            <h2>Payroll pulse</h2>
+          </div>
+          <span class="badge" id="wasm-badge">Loading asset...</span>
+        </div>
+        <div class="summary-grid">
+          <div class="metric">
+            <span>Employees</span>
+            <strong id="employee-count">00</strong>
+          </div>
+          <div class="metric">
+            <span>Average Net Pay</span>
+            <strong id="avg-net-pay">₹0.00</strong>
+          </div>
+          <div class="metric">
+            <span>Total Payout</span>
+            <strong id="total-payout">₹0.00</strong>
+          </div>
+          <div class="metric">
+            <span>Top Earner</span>
+            <strong id="top-employee">None yet</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <div class="left-column">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Create</p>
+              <h2>Add Employee</h2>
+            </div>
+          </div>
+          <form id="add-form" class="form-grid">
+            <div class="field">
+              <label for="empId">Employee ID</label>
+              <input id="empId" name="empId" type="number" min="1" required>
+            </div>
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" required>
+            </div>
+            <div class="field">
+              <label for="basicPay">Basic Pay</label>
+              <input id="basicPay" name="basicPay" type="number" min="0" step="0.01" required>
+            </div>
+            <div class="field">
+              <label for="otHours">OT Hours</label>
+              <input id="otHours" name="otHours" type="number" min="0" required>
+            </div>
+            <div class="field field--full">
+              <button class="btn-primary" type="submit">Add Employee</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Manage</p>
+              <h2>Update OT Hours</h2>
+            </div>
+          </div>
+          <form id="update-form" class="form-grid">
+            <div class="field">
+              <label for="updateEmpId">Employee ID</label>
+              <input id="updateEmpId" name="empId" type="number" min="1" required>
+            </div>
+            <div class="field">
+              <label for="updateOtHours">New OT Hours</label>
+              <input id="updateOtHours" name="otHours" type="number" min="0" required>
+            </div>
+            <div class="field field--full">
+              <button class="btn-secondary" type="submit">Update Overtime</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">People</p>
+              <h2>Employee Overview</h2>
+            </div>
+          </div>
+          <div id="empty-state" class="empty-state" hidden>No employees added yet. Use the form above to get started.</div>
+          <div id="employee-grid" class="employee-grid"></div>
+        </section>
+      </div>
+
+      <div class="right-column">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Slip</p>
+              <h2>Generate Payslip</h2>
+              
+          <form id="slip-form" class="form-grid">
+            <div class="field field--full">
+              <label for="slipEmpId">Employee ID</label>
+              <input id="slipEmpId" name="empId" type="number" min="1" required>
+            </div>
+            <div class="field field--full">
+              <button class="btn-primary" type="submit">Generate Salary Slip</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Output</p>
+              <h2 id="result-title">Payroll insights</h2>
+            </div>
+          </div>
+          <div class="result-box" id="result-body">Use the controls on the left to add employees, update overtime, and generate salary slips.</div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="index.js"></script>
+</body>
+</html>
